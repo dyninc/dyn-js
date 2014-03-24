@@ -2,7 +2,6 @@
 
 _     = require 'underscore'
 q     = require 'q'
-async = require 'async-q'
 https = require 'https'
 log   = require('npmlog')
 
