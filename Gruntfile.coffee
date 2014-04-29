@@ -9,6 +9,9 @@ module.exports = (grunt) ->
 
     coffee:
       compile:
+        options:
+          bare: true
+          join: false
         files: [
           expand: true
           cwd: 'src'
