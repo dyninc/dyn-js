@@ -30,7 +30,7 @@
   	"url" : "https://github.com/dyninc/dyn-js"
   },
   "dependencies": {
-    "npmlog": "~0.0.6",
+    "npmlog": "~0.0.6 ",
     "q": "~1.0.1",
     "underscore": "~1.6.0"
   },
