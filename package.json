@@ -1,0 +1,43 @@
+{
+  "name": "dyn-js",
+  "description": "Dyn SDK for Node.JS",
+  "version": "0.0.1",
+  "contributors": [
+    {
+      "name": "Sunny Gleason",
+      "url": "http://dyn.com"
+    },
+    {
+      "name": "Ashley Brener",
+      "url": "http://frisB.com"
+    }
+  ],
+  "main": "Gruntfile.coffee",
+  "engines": {
+    "node": ">= 0.8.x"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-coffee": "~0.10.1"
+  },
+  "bugs": {
+    "url" : "https://github.com/dyninc/dyn-js/issues"
+  },
+  "license": "MIT",
+  "repository": {
+  	"type" : "git",
+  	"url" : "https://github.com/dyninc/dyn-js"
+  },
+  "dependencies": {
+    "npmlog": "~0.0.6 ",
+    "q": "~1.0.1",
+    "underscore": "~1.6.0"
+  },
+  "keywords": [
+    "dyn",
+    "dynect",
+    "dns",
+    "dynamic dns"
+  ]
+}
