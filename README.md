@@ -3,6 +3,10 @@
 NOTE: This is SDK is brand new - we welcome your feedback! Please
 reach out via pull request or GitHub issue.
 
+Installing is as easy as:
+
+    npm install dyn-js
+
 Making DNS Updates is as easy as:
 
     var Dyn   = require('dyn-js');
