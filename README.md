@@ -8,7 +8,7 @@ Making DNS Updates is as easy as:
     var Dyn   = require('./dyn-js.js');
     var async = require('async-q');
 
-    var dynClient = Dyn({customer_name:'yourcustomername',user_name:'yourusername',password:'yourpassword'})
+    var dynClient = Dyn({traffic:{customer_name:'yourcustomername',user_name:'yourusername',password:'yourpassword'}})
     var dyn = dynClient.traffic.withZone('example.com')
 
     var errorCallback = function() { console.log('FAIL', arguments); };
@@ -44,6 +44,95 @@ Making DNS Updates is as easy as:
       return dyn.session.destroy();
     });
 
+Using Messaging is as easy as:
+
+    var Dyn   = require('./dyn-js.js');
+    var async = require('async-q');
+
+    var dynClient = Dyn({messaging:{apikey:'yourapikey'}});
+    var dyn = dynClient.messaging;
+
+    async.series([
+      function() {
+        return dyn.senders.create("foo@bars.com", 3).then(function(x) {
+          log.info('RESULT', "created sender: " + (JSON.stringify(x)));
+          return x;
+        });
+      }, function() {
+        return dyn.senders.status("foo@bars.com").then(function(x) {
+          log.info('RESULT', "got sender status: " + (JSON.stringify(x)));
+          return x;
+      }, function() {
+        return dyn.senders.details("foo@bars.com").then(function(x) {
+          log.info('RESULT', "got sender detail: " + (JSON.stringify(x)));
+          return x;
+        });
+      }
+    ]).then(function() {
+      return _(arguments[0]).forEach(function(x) {
+        return log.info('RESULT', "finished : " + (JSON.stringify(x)));
+      });
+    }, fail);
+    
+    async.series([
+      function() {
+        return dyn.accounts.create("example@foo.com", "secret", "bar", "1234567890").then(function(x) {
+          log.info('RESULT', "created account: " + (JSON.stringify(x)));
+          return x;
+        });
+      }, function() {
+        return dyn.accounts.list().then(function(x) {
+          log.info('RESULT', "got accounts: " + (JSON.stringify(x)));
+          return x;
+        });
+      }, function() {
+        return dyn.accounts.list_xheaders().then(function(x) {
+          log.info('RESULT', "got xheaders: " + (JSON.stringify(x)));
+          return x;
+        });
+      }, function() {
+        return dyn.accounts.update_xheaders("X-Test1", "X-AnotherTest2", "X-Testing3", "X-FullyTested4").then(function(x) {
+          log.info('RESULT', "updated xheaders: " + (JSON.stringify(x)));
+          return x;
+        });
+      }
+    ]).then(function() {
+      return _(arguments[0]).forEach(function(x) {
+        return log.info('RESULT', "finished : " + (JSON.stringify(x)));
+      });
+    }, fail);
+    
+    async.series([
+      function() {
+        return dyn.recipients.activate("foo@bars.com").then(function(x) {
+          log.info('RESULT', "activated recipient: " + (JSON.stringify(x)));
+          return x;
+        });
+      }, function() {
+        return dyn.recipients.status("foo@bars.com").then(function(x) {
+          log.info('RESULT', "got status of recipient: " + (JSON.stringify(x)));
+          return x;
+        });
+      }
+    ]).then(function() {
+      return _(arguments[0]).forEach(function(x) {
+        return log.info('RESULT', "finished : " + (JSON.stringify(x)));
+      });
+    }, fail);
+    
+    async.series([
+      function() {
+        return dyn.send_mail.create("foo@bars.com", "recipient@destination.com", "hello, new js api", "it works!").then(function(x) {
+          log.info('RESULT', "sent mail: " + (JSON.stringify(x)));
+          return x;
+        });
+      }
+    ]).then(function() {
+      return _(arguments[0]).forEach(function(x) {
+        return log.info('RESULT', "finished : " + (JSON.stringify(x)));
+      });
+    }, fail);
+
 # API Endpoints Supported
 
 * Traffic - Session API: create/destroy
@@ -53,6 +142,10 @@ Making DNS Updates is as easy as:
 * Traffic - Zone API: list/get/create/destroy/publish/freeze/thaw
 * Traffic - HttpRedirect API: list/get/create/update/destroy
 * Messaging - All Endpoints Supported
+
+# Examples
+
+* See the "examples" folder for more comprehensive examples
 
 ## License
 
