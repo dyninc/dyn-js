@@ -5,7 +5,7 @@ reach out via pull request or GitHub issue.
 
 Making DNS Updates is as easy as:
 
-    var Dyn   = require('./dyn-js.js');
+    var Dyn   = require('dyn-js');
     var async = require('async-q');
 
     var dynClient = Dyn({traffic:{customer_name:'yourcustomername',user_name:'yourusername',password:'yourpassword'}})
@@ -46,7 +46,7 @@ Making DNS Updates is as easy as:
 
 Using Messaging is as easy as:
 
-    var Dyn   = require('./dyn-js.js');
+    var Dyn   = require('dyn-js');
     var async = require('async-q');
 
     var dynClient = Dyn({messaging:{apikey:'yourapikey'}});
