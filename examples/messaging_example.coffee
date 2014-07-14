@@ -117,10 +117,10 @@ async.series([
 
 # delivery: list, count
 async.series([
-  -> dyn.delivery.list().then (x) ->
+  -> dyn.delivery.list('2014-01-01', '2014-07-18').then (x) ->
      log.info 'RESULT', "got delivery list: #{JSON.stringify(x)}"
      x
-  -> dyn.delivery.count().then (x) ->
+  -> dyn.delivery.count('2014-01-01', '2014-07-18').then (x) ->
      log.info 'RESULT', "got delivery count: #{JSON.stringify(x)}"
      x
 ]).then ->
