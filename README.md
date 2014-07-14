@@ -1,6 +1,6 @@
 # Dyn SDK for Node.JS - Developer Preview
 
-NOTE: This is a developer preview - we welcome your feedback! Please
+NOTE: This is SDK is brand new - we welcome your feedback! Please
 reach out via pull request or GitHub issue.
 
 Making DNS Updates is as easy as:

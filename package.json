@@ -1,7 +1,7 @@
 {
   "name": "dyn-js",
   "description": "Dyn SDK for Node.JS",
-  "version": "0.99.0",
+  "version": "1.0.0",
   "contributors": [
     {
       "name": "Sunny Gleason",
@@ -20,7 +20,7 @@
       "url": "http://frisB.com"
     }
   ],
-  "main": "Gruntfile.coffee",
+  "main": "lib/dyn-js.js",
   "engines": {
     "node": ">= 0.8.x"
   },
@@ -47,5 +47,6 @@
     "dynect",
     "dns",
     "dynamic dns"
-  ]
+  ],
+  "main": "lib/dyn-js.js"
 }
