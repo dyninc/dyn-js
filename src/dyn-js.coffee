@@ -257,7 +257,7 @@ Dyn = (opts) ->
     prefix:'/REST'
     headers:{
       'Content-Type':'application/json'
-      'User-Agent':'dyn-js v1.0.0'
+      'User-Agent':'dyn-js v1.0.3'
     }
     token:null
   }
@@ -268,7 +268,7 @@ Dyn = (opts) ->
     prefix:'/rest/json'
     headers:{
       'Content-Type':'application/x-www-form-urlencoded'
-      'User-Agent':'dyn-js v1.0.0'
+      'User-Agent':'dyn-js v1.0.3'
     }
     apikey:null
   }

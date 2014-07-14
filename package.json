@@ -1,7 +1,7 @@
 {
   "name": "dyn-js",
   "description": "Dyn SDK for Node.JS",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "contributors": [
     {
       "name": "Sunny Gleason",
