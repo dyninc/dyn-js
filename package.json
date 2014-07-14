@@ -1,7 +1,7 @@
 {
   "name": "dyn-js",
   "description": "Dyn SDK for Node.JS",
-  "version": "0.0.1",
+  "version": "0.99.0",
   "contributors": [
     {
       "name": "Sunny Gleason",
@@ -9,6 +9,10 @@
     },
     {
       "name": "Dani Dewitt",
+      "url": "http://dyn.com"
+    },
+    {
+      "name": "Adam Sarenski",
       "url": "http://dyn.com"
     },
     {

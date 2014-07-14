@@ -46,11 +46,13 @@ Making DNS Updates is as easy as:
 
 # API Endpoints Supported
 
-* Session API: create/destroy
-* Record API: AAAA A CNAME DNSKEY DS KEY LOC MX NS PTR RP SOA SRV TXT
-* GSLB API: list/get/create/update/destroy
-* GSLB Region API: list/get/create/update/destroy
-* Zone API: list/get/create/destroy/publish/freeze/thaw
+* Traffic - Session API: create/destroy
+* Traffic - Record API: AAAA A CNAME DNSKEY DS KEY LOC MX NS PTR RP SOA SRV TXT
+* Traffic - GSLB API: list/get/create/update/destroy
+* Traffic - GSLB Region API: list/get/create/update/destroy
+* Traffic - Zone API: list/get/create/destroy/publish/freeze/thaw
+* Traffic - HttpRedirect API: list/get/create/update/destroy
+* Messaging - All Endpoints Supported
 
 ## License
 
