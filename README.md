@@ -1,4 +1,4 @@
-# Dyn SDK for Node.JS - Developer Preview
+# Dyn SDK for Node.JS
 
 NOTE: This is SDK is brand new - we welcome your feedback! Please
 reach out via pull request or GitHub issue.
