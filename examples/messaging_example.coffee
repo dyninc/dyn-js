@@ -27,6 +27,9 @@ async.series([
   -> dyn.senders.details("foo@bars.com").then (x) ->
      log.info 'RESULT', "got sender detail: #{JSON.stringify(x)}"
      x
+  -> dyn.senders.dkim("foo@bars.com", "testdkim").then (x) ->
+     log.info 'RESULT', "set sender dkim: #{JSON.stringify(x)}"
+     x
   -> dyn.senders.destroy("foo@bars.com").then (x) ->
      log.info 'RESULT', "deleted sender: #{JSON.stringify(x)}"
      x
