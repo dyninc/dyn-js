@@ -70,7 +70,7 @@ async.series([
     log.info 'RESULT', "finished : #{JSON.stringify(x)}"
 , fail
 
-send mail: create
+# send mail: create
 async.series([
   -> dyn.send_mail.create("foo@bars.com", "recipient@destination.com", "hello, new js api", "it works!").then (x) ->
      log.info 'RESULT', "sent mail: #{JSON.stringify(x)}"

@@ -111,10 +111,6 @@
     });
   }, fail);
 
-  send({
-    mail: create
-  });
-
   async.series([
     function() {
       return dyn.send_mail.create("foo@bars.com", "recipient@destination.com", "hello, new js api", "it works!").then(function(x) {
