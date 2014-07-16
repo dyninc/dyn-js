@@ -49,6 +49,11 @@
         return x;
       });
     }, function() {
+      return dyn.senders.dkim("foo@bars.com", "testdkim").then(function(x) {
+        log.info('RESULT', "set sender dkim: " + (JSON.stringify(x)));
+        return x;
+      });
+    }, function() {
       return dyn.senders.destroy("foo@bars.com").then(function(x) {
         log.info('RESULT', "deleted sender: " + (JSON.stringify(x)));
         return x;
@@ -177,12 +182,12 @@
 
   async.series([
     function() {
-      return dyn.delivery.list().then(function(x) {
+      return dyn.delivery.list('2014-01-01', '2014-07-18').then(function(x) {
         log.info('RESULT', "got delivery list: " + (JSON.stringify(x)));
         return x;
       });
     }, function() {
-      return dyn.delivery.count().then(function(x) {
+      return dyn.delivery.count('2014-01-01', '2014-07-18').then(function(x) {
         log.info('RESULT', "got delivery count: " + (JSON.stringify(x)));
         return x;
       });
