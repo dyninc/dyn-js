@@ -220,7 +220,7 @@ callWithError = (funProm, description, successFilter, successCase, errorCase) ->
 
       log.info 'dyn', "api call returned error : #{JSON.stringify(x[1])}"
       errorCase x[1]
-      
+
   , (x) ->
     log.warn 'dyn', "unexpected error : #{JSON.stringify(x[1])}"
     errorCase x
@@ -250,7 +250,8 @@ extractZones = (x) ->
     {zone:v[3]}
 
 throwMessages    = (x) -> throw (x.msgs || "unknown exception when calling api")
-throwMsgMessages = (x) -> return x?.response?.message || "unknown exception when calling api"
+throwMsgMessages = (x) -> throw (x?.response?.message || "unknown exception when calling api")
+throwResponse =(x) -> return x?.response || "unknown exception when calling api"
 
 Dyn = (opts) ->
   traffic_defaults = _.defaults opts?.traffic || {}, {
@@ -363,7 +364,7 @@ Dyn = (opts) ->
   messaging.senders.create            = (email, seeding) -> callWithError messaging.senders._create._call(messaging, {}, _.defaults({emailaddress:email,seeding:seeding||'0'}, {apikey:messaging.defaults.apikey})), "senders.create", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.update            = (email, seeding) -> callWithError messaging.senders._update._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.update", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.details           = (email)          -> callWithError messaging.senders._details._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.details", msgIsOk, extractMsgData, throwMsgMessages
-  messaging.senders.status            = (email)          -> callWithError messaging.senders._status._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.status", msgIsOk, extractMsgData, throwMsgMessages
+  messaging.senders.status            = (email)          -> callWithError messaging.senders._status._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.status", msgIsOk, extractMsgData, throwResponse
   messaging.senders.dkim              = (email, dkim)    -> callWithError messaging.senders._dkim._call(messaging, {}, _.defaults({emailaddress:email,dkim:dkim}, {apikey:messaging.defaults.apikey})), "senders.dkim", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.destroy           = (email)          -> callWithError messaging.senders._destroy._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.destroy", msgIsOk, extractMsgData, throwMsgMessages
 
