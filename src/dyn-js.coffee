@@ -217,8 +217,11 @@ callWithError = (funProm, description, successFilter, successCase, errorCase) ->
       log.silly 'dyn', "api call returned successfully : #{JSON.stringify(x[1])}"
       successCase(x[1])
     else
+      try
       log.info 'dyn', "api call returned error : #{JSON.stringify(x[1])}"
       errorCase x[1]
+      catch error
+        log.warn error
   , (x) ->
     log.warn 'dyn', "unexpected error : #{JSON.stringify(x[1])}"
     errorCase x
@@ -248,7 +251,7 @@ extractZones = (x) ->
     {zone:v[3]}
 
 throwMessages    = (x) -> throw (x.msgs || "unknown exception when calling api")
-throwMsgMessages = (x) -> throw (x?.response?.message || "unknown exception when calling api")
+throwMsgMessages = (x) -> return x?.response?.message || "unknown exception when calling api"
 
 Dyn = (opts) ->
   traffic_defaults = _.defaults opts?.traffic || {}, {
