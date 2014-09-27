@@ -157,7 +157,7 @@ crudRecipients = (type) ->
     _status:          {path:"/recipients/status", method: "GET"}
 
 crudSendMail = (type) ->
-  crudMessaging "/send/", 
+  crudMessaging "/send/",
     _create:          {path:"/send"}
 
 crudSuppressions = (type) ->
@@ -217,11 +217,10 @@ callWithError = (funProm, description, successFilter, successCase, errorCase) ->
       log.silly 'dyn', "api call returned successfully : #{JSON.stringify(x[1])}"
       successCase(x[1])
     else
-      try
+
       log.info 'dyn', "api call returned error : #{JSON.stringify(x[1])}"
       errorCase x[1]
-      catch error
-        log.warn error
+      
   , (x) ->
     log.warn 'dyn', "unexpected error : #{JSON.stringify(x[1])}"
     errorCase x
