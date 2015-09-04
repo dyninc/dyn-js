@@ -120,6 +120,14 @@ crudZone = ->
     _update:   {path:"/Zone/{{zone}}/"}
     _destroy:  {path:"/Zone/{{zone}}/"}
 
+crudJob = ->
+  crudTraffic "/Job/",
+    _get:      {path:"/Job/{{id}}/"}
+
+crudNode = ->
+  crudTraffic "/Node/",
+    _destroy:  {path:"/Node/{{zone}}/{{fqdn}}/"}
+
 crudHttpRedirect = ->
   crudTraffic "/HTTPRedirect/",
     _get:      {path:"/HTTPRedirect/{{zone}}/{{fqdn}}"}
@@ -308,6 +316,18 @@ Dyn = (opts) ->
   traffic.zone.publish =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {publish:true}), "zone.publish", isOk, extractData, throwMessages
   traffic.zone.freeze  =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {freeze:true}), "zone.freeze", isOk, extractData, throwMessages
   traffic.zone.thaw    =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {thaw:true}), "zone.thaw", isOk, extractData, throwMessages
+
+  traffic.job = crudJob()
+  traffic.job.get = (id) ->
+    callWithError traffic.job._get._call(traffic, {
+        zone:traffic.defaults.zone,
+        id:id }, {}),
+      "job.get", isOk, extractData, throwMessages
+
+  traffic.node = crudNode()
+  traffic.node.destroy = (fqdn) -> callWithError traffic.node._destroy._call(traffic,
+    {zone:traffic.defaults.zone, fqdn: fqdn}, {}),
+    "node.destroy", isOk, extractMsgs, throwMessages
 
   traffic.session  = crudTraffic "/Session/"
   traffic.session.create = -> callWithError(traffic.session._create._call(traffic, {}, _.pick(traffic.defaults, 'customer_name', 'user_name', 'password')), "session.create", isOk, (x) ->
