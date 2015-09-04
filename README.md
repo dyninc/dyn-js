@@ -77,7 +77,7 @@ Using Messaging is as easy as:
         return log.info('RESULT', "finished : " + (JSON.stringify(x)));
       });
     }, fail);
-    
+
     async.series([
       function() {
         return dyn.accounts.create("example@foo.com", "secret", "bar", "1234567890").then(function(x) {
@@ -105,7 +105,7 @@ Using Messaging is as easy as:
         return log.info('RESULT', "finished : " + (JSON.stringify(x)));
       });
     }, fail);
-    
+
     async.series([
       function() {
         return dyn.recipients.activate("foo@bars.com").then(function(x) {
@@ -123,7 +123,7 @@ Using Messaging is as easy as:
         return log.info('RESULT', "finished : " + (JSON.stringify(x)));
       });
     }, fail);
-    
+
     async.series([
       function() {
         return dyn.send_mail.create("foo@bars.com", "recipient@destination.com", "hello, new js api", "it works!").then(function(x) {
@@ -150,6 +150,10 @@ Using Messaging is as easy as:
 # Examples
 
 * See the "examples" folder for more comprehensive examples
+
+## Building
+
+To compile the coffee-script, first install dev dependencies: `npm install`. Then run `npm run compile`.
 
 ## License
 
