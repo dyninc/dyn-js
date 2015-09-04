@@ -1,12 +1,19 @@
 'use strict'
 
-_     = require 'underscore'
-q     = require 'q'
-https = require 'https'
-log   = require 'npmlog'
-qs    = require 'querystring'
+_      = require 'underscore'
+q      = require 'q'
+https  = require 'https'
+log    = require 'npmlog'
+qs     = require 'querystring'
+concat = require 'concat-stream'
 
 _.templateSettings = { interpolate: /\{\{(.+?)\}\}/g }
+
+safeparse = (str) ->
+  try
+    return JSON.parse(str)
+  catch ex
+    return str
 
 _request_q = (dyn, method, path, body, isTraffic) ->
   log.verbose 'dyn', "invoking via https : #{method} #{path}"
@@ -41,17 +48,20 @@ _request_q = (dyn, method, path, body, isTraffic) ->
   opts = {hostname:host,port:port,method:method,path:path,headers:headers}
   log.silly 'dyn', "request : #{JSON.stringify(opts)}"
   req = https.request opts, (res) ->
-    # log.silly 'dynres', arguments
-    data = ''
-    res.on 'readable', ->
-      # log.silly 'dynres', arguments
-      chunk = res.read()
-      # log.silly 'dyn', "partial : #{chunk}"
-      data += chunk.toString('ascii')
-    res.on 'end', ->
-      log.silly 'dyn', "response : #{data}"
-      response = JSON.parse(data)
+
+    handleError = (err) ->
+      log.silly 'dyn', err.message
+      cc(err)
+
+    handleDone = (buffer) ->
+      log.silly 'dyn', "response : #{buffer.toString()}"
+      response = safeparse(buffer)
       cc(null, response, res)
+
+    concatStream = concat(handleDone)
+    res.on('error', handleError)
+    res.pipe(concatStream)
+
   req.on 'error', (e) ->
     log.warn 'dyn', "error : #{JSON.stringify(e)}"
     cc(e)
