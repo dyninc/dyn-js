@@ -1,12 +1,19 @@
 'use strict'
 
-_     = require 'underscore'
-q     = require 'q'
-https = require 'https'
-log   = require 'npmlog'
-qs    = require 'querystring'
+_      = require 'underscore'
+q      = require 'q'
+https  = require 'https'
+log    = require 'npmlog'
+qs     = require 'querystring'
+concat = require 'concat-stream'
 
 _.templateSettings = { interpolate: /\{\{(.+?)\}\}/g }
+
+safeparse = (str) ->
+  try
+    return JSON.parse(str)
+  catch ex
+    return str
 
 _request_q = (dyn, method, path, body, isTraffic) ->
   log.verbose 'dyn', "invoking via https : #{method} #{path}"
@@ -41,17 +48,20 @@ _request_q = (dyn, method, path, body, isTraffic) ->
   opts = {hostname:host,port:port,method:method,path:path,headers:headers}
   log.silly 'dyn', "request : #{JSON.stringify(opts)}"
   req = https.request opts, (res) ->
-    # log.silly 'dynres', arguments
-    data = ''
-    res.on 'readable', ->
-      # log.silly 'dynres', arguments
-      chunk = res.read()
-      # log.silly 'dyn', "partial : #{chunk}"
-      data += chunk.toString('ascii')
-    res.on 'end', ->
-      log.silly 'dyn', "response : #{data}"
-      response = JSON.parse(data)
+
+    handleError = (err) ->
+      log.silly 'dyn', err.message
+      cc(err)
+
+    handleDone = (buffer) ->
+      log.silly 'dyn', "response : #{buffer.toString()}"
+      response = safeparse(buffer)
       cc(null, response, res)
+
+    concatStream = concat(handleDone)
+    res.on('error', handleError)
+    res.pipe(concatStream)
+
   req.on 'error', (e) ->
     log.warn 'dyn', "error : #{JSON.stringify(e)}"
     cc(e)
@@ -110,6 +120,14 @@ crudZone = ->
     _update:   {path:"/Zone/{{zone}}/"}
     _destroy:  {path:"/Zone/{{zone}}/"}
 
+crudJob = ->
+  crudTraffic "/Job/",
+    _get:      {path:"/Job/{{id}}/"}
+
+crudNode = ->
+  crudTraffic "/Node/",
+    _destroy:  {path:"/Node/{{zone}}/{{fqdn}}/"}
+
 crudHttpRedirect = ->
   crudTraffic "/HTTPRedirect/",
     _get:      {path:"/HTTPRedirect/{{zone}}/{{fqdn}}"}
@@ -157,7 +175,7 @@ crudRecipients = (type) ->
     _status:          {path:"/recipients/status", method: "GET"}
 
 crudSendMail = (type) ->
-  crudMessaging "/send/", 
+  crudMessaging "/send/",
     _create:          {path:"/send"}
 
 crudSuppressions = (type) ->
@@ -217,8 +235,10 @@ callWithError = (funProm, description, successFilter, successCase, errorCase) ->
       log.silly 'dyn', "api call returned successfully : #{JSON.stringify(x[1])}"
       successCase(x[1])
     else
+
       log.info 'dyn', "api call returned error : #{JSON.stringify(x[1])}"
       errorCase x[1]
+
   , (x) ->
     log.warn 'dyn', "unexpected error : #{JSON.stringify(x[1])}"
     errorCase x
@@ -237,6 +257,7 @@ failBool    = -> false
 
 extractRecords = (x) ->
   return [] unless x && x.data
+  return x.data unless Array.isArray(x.data)
   _(x.data).map (r) ->
     v = r.split("/")
     {type:v[2].replace(/Record$/, ""),zone:v[3],fqdn:v[4],id:v[5]}
@@ -249,6 +270,7 @@ extractZones = (x) ->
 
 throwMessages    = (x) -> throw (x.msgs || "unknown exception when calling api")
 throwMsgMessages = (x) -> throw (x?.response?.message || "unknown exception when calling api")
+throwResponse =(x) -> return x?.response || "unknown exception when calling api"
 
 Dyn = (opts) ->
   traffic_defaults = _.defaults opts?.traffic || {}, {
@@ -295,6 +317,18 @@ Dyn = (opts) ->
   traffic.zone.publish =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {publish:true}), "zone.publish", isOk, extractData, throwMessages
   traffic.zone.freeze  =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {freeze:true}), "zone.freeze", isOk, extractData, throwMessages
   traffic.zone.thaw    =        -> callWithError traffic.zone._update._call(traffic, {zone:traffic.defaults.zone}, {thaw:true}), "zone.thaw", isOk, extractData, throwMessages
+
+  traffic.job = crudJob()
+  traffic.job.get = (id) ->
+    callWithError traffic.job._get._call(traffic, {
+        zone:traffic.defaults.zone,
+        id:id }, {}),
+      "job.get", isOk, extractData, throwMessages
+
+  traffic.node = crudNode()
+  traffic.node.destroy = (fqdn) -> callWithError traffic.node._destroy._call(traffic,
+    {zone:traffic.defaults.zone, fqdn: fqdn}, {}),
+    "node.destroy", isOk, extractMsgs, throwMessages
 
   traffic.session  = crudTraffic "/Session/"
   traffic.session.create = -> callWithError(traffic.session._create._call(traffic, {}, _.pick(traffic.defaults, 'customer_name', 'user_name', 'password')), "session.create", isOk, (x) ->
@@ -361,7 +395,7 @@ Dyn = (opts) ->
   messaging.senders.create            = (email, seeding) -> callWithError messaging.senders._create._call(messaging, {}, _.defaults({emailaddress:email,seeding:seeding||'0'}, {apikey:messaging.defaults.apikey})), "senders.create", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.update            = (email, seeding) -> callWithError messaging.senders._update._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.update", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.details           = (email)          -> callWithError messaging.senders._details._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.details", msgIsOk, extractMsgData, throwMsgMessages
-  messaging.senders.status            = (email)          -> callWithError messaging.senders._status._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.status", msgIsOk, extractMsgData, throwMsgMessages
+  messaging.senders.status            = (email)          -> callWithError messaging.senders._status._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.status", msgIsOk, extractMsgData, throwResponse
   messaging.senders.dkim              = (email, dkim)    -> callWithError messaging.senders._dkim._call(messaging, {}, _.defaults({emailaddress:email,dkim:dkim}, {apikey:messaging.defaults.apikey})), "senders.dkim", msgIsOk, extractMsgData, throwMsgMessages
   messaging.senders.destroy           = (email)          -> callWithError messaging.senders._destroy._call(messaging, {}, _.defaults({emailaddress:email}, {apikey:messaging.defaults.apikey})), "senders.destroy", msgIsOk, extractMsgData, throwMsgMessages
 
