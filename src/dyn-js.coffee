@@ -257,6 +257,7 @@ failBool    = -> false
 
 extractRecords = (x) ->
   return [] unless x && x.data
+  return x.data unless Array.isArray(x.data)
   _(x.data).map (r) ->
     v = r.split("/")
     {type:v[2].replace(/Record$/, ""),zone:v[3],fqdn:v[4],id:v[5]}
